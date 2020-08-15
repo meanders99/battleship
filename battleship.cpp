@@ -257,13 +257,11 @@ void cpuPlaceShips(char** board, map<string, int>* ship_coords) {
 int makeMove(char** player_moves, char** opp_board, int row, int column) {
     // Player already hit this coordinate
     if (opp_board[row][column] == 'X' || opp_board[row][column] == '#') {
-        cout << "Player's chosen space already used" << endl;
         return -1;
     }
 
     // Miss
     if (opp_board[row][column] == 'O') {
-        cout << "Player missed" << endl;
         opp_board[row][column] = 'X';
         player_moves[row][column] = 'X';
         return 0;
@@ -271,7 +269,6 @@ int makeMove(char** player_moves, char** opp_board, int row, int column) {
 
     // Hit
     else {
-        cout << "Player hit" << endl;
         opp_board[row][column] = '#';
         player_moves[row][column] = '#';
         return 1;
@@ -320,15 +317,14 @@ string getMoveCoord(char** player_moves, char** cpu_board, char** player_board) 
         return "miss";
     }
     else {
-        cout << "About to print board after player has moved" << endl;
+        //cout << "About to print board after player has moved" << endl;
         printBoard(player_board, player_moves);
-        //cout << location << "... Hit!";
+        cout << location << "... Hit!";
         return location;
     }
 }
 
 string cpuMakeMove(char** player_moves, char** player_board) {
-    cout << "CPU is making its move" << endl;
     bool move_valid = false;
     int row = -1;
     int column = -1;
@@ -337,13 +333,13 @@ string cpuMakeMove(char** player_moves, char** player_board) {
     while (!move_valid) {
         row = rand() % 10;
         column = rand() % 10;
-        cout << "cpu's random move: (" << row << ", " << column << ")" << endl;
+        //cout << "cpu's random move: (" << row << ", " << column << ")" << endl;
         if (player_board[row][column] == 'O' || player_board[row][column] == '@') {
             move_valid = true;
         }
     }
     string location = rows[row] + to_string(column + 1);
-    cout << "CPU final move location: " << location << endl;
+    //cout << "CPU final move location: " << location << endl;
     if (player_board[row][column] == 'O') {
         player_board[row][column] = 'X';
         printBoard(player_board, player_moves);
@@ -425,8 +421,8 @@ int main() {
         move_result = getMoveCoord(player_moves, cpu_board, player_board);
         // Update player score
         if (move_result != "miss") {
-            int ship = p_ship_coords->at(move_result);
-            cout << "Player hit the " << ship << " ship!" << endl;
+            //cout << "map location count: " << cpu_ship_coords->count(move_result) << endl;
+            int ship = cpu_ship_coords->at(move_result);
             player_score[ship] += 1;
             if (player_score[ship] == victory[ship]) {
                 cout << " Sunk the opponent's size " << victory[ship] << "ship!";
@@ -451,7 +447,7 @@ int main() {
         move_result = cpuMakeMove(player_moves, player_board);
         // Update player score
         if (move_result != "miss") {
-            int ship = cpu_ship_coords->at(move_result);
+            int ship = p_ship_coords->at(move_result);
             cpu_score[ship] += 1;
             if (cpu_score[ship] == victory[ship]) {
                 cout << " The CPU sunk your size " << victory[ship] << "ship!";
