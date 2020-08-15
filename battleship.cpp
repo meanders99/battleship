@@ -358,6 +358,17 @@ string cpuMakeMove(char** player_moves, char** player_board) {
     return location;
 }
 
+void autoGenShips(char** board, map<string, int>* ship_coords) {
+    vector<int> boat_sizes = {5, 4, 3, 3, 2};
+    vector<char> rows = {'A', 'B', 'C', 'D', 'E'};
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < boat_sizes[i]; j++) {
+            board[i][j] = '@';
+            ship_coords->insert(std::pair<string, int>(rows[i]+to_string(j+1), boat_sizes[i]));
+        }
+    }
+}
+
 bool checkWinner(vector<int> score) {
     vector<int> victory = {5, 4, 3, 3, 2};
     // checks if computer or player won the game
@@ -399,7 +410,8 @@ int main() {
     map<string, int>* cpu_ship_coords = new map<string, int>();
 
     printBoard(player_board, player_moves);
-    placeShips(player_board, player_moves, p_ship_coords);
+    //placeShips(player_board, player_moves, p_ship_coords);
+    autoGenShips(player_board, p_ship_coords);
     cpuPlaceShips(cpu_board, cpu_ship_coords);
 
     bool game_over = false;
