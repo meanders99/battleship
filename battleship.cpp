@@ -425,15 +425,13 @@ int main() {
             int ship = cpu_ship_coords->at(move_result);
             player_score[ship] += 1;
             if (player_score[ship] == victory[ship]) {
-                cout << " Sunk the opponent's size " << victory[ship] << "ship!";
+                cout << " Sunk the opponent's size " << victory[ship] << " ship!";
                 game_over = checkWinner(player_score);
             }
         }
-        cout << endl;
+        cout << endl << endl;
         if (game_over) {
-            cout << "Congratulations! You won Battleship!" << endl;
-            cout << "Press 'Enter' to exit game. Thanks for playing!" << endl;
-            cin >> move_result;
+            cout << "Congratulations! You won Battleship! Thanks for playing!" << endl;
             break;
         }
 
@@ -457,9 +455,7 @@ int main() {
         cout << endl;
     
         if (game_over) {
-            cout << "The computer won! Better luck next time." << endl;
-            cout << "Press 'Enter' to exit game. Thanks for playing!" << endl;
-            cin >> move_result;
+            cout << "The computer won! Better luck next time. Thanks for playing!" << endl;
         }
     }
 
