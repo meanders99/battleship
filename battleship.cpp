@@ -4,9 +4,16 @@
 #include <vector>
 #include <map>
 #include <stdlib.h>
-//#include <unistd.h>
+#include <time.h>
+// #include <thread>
+// #include <chrono>
 
 using namespace std;
+
+void customSleep(int ms) {
+    clock_t goal = ms + clock();
+    while(goal > clock());
+}
 
 void printBoard(char** player_board, char** player_moves) {
     // prints game board after each move
@@ -53,7 +60,7 @@ void printBoard(char** player_board, char** player_moves) {
         }
         cout << endl;
     }
-    cout << "Done printing board" << endl; 
+    cout << endl; 
 }
 
 int rowLetterToNumber(char letter) {
@@ -200,6 +207,7 @@ void placeShips(char** board, char** moves, map<string, int>* ship_coords) {
             }
         }
         // reprint board to show placement of new ship
+        system("clear");
         printBoard(board, moves);
     }
 }
@@ -311,6 +319,7 @@ string getMoveCoord(char** player_moves, char** cpu_board, char** player_board) 
             cout << "Invalid coordinate entry! Please try again." << endl;
         }
     }
+    system("clear");
     if (column == 0) {
         printBoard(player_board, player_moves);
         cout << location << "... Miss!" << endl;
@@ -354,17 +363,6 @@ string cpuMakeMove(char** player_moves, char** player_board) {
     return location;
 }
 
-void autoGenShips(char** board, map<string, int>* ship_coords) {
-    vector<int> boat_sizes = {5, 4, 3, 3, 2};
-    vector<char> rows = {'A', 'B', 'C', 'D', 'E'};
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < boat_sizes[i]; j++) {
-            board[i][j] = '@';
-            ship_coords->insert(std::pair<string, int>(rows[i]+to_string(j+1), boat_sizes[i]));
-        }
-    }
-}
-
 bool checkWinner(vector<int> score) {
     vector<int> victory = {5, 4, 3, 3, 2};
     // checks if computer or player won the game
@@ -377,7 +375,15 @@ bool checkWinner(vector<int> score) {
 }
 
 int main() {
+    system("clear");
+    string man_or_rand;
     cout << "------ Welcome to Battleship! ------" << endl;
+    cout << "Input '1' to place your ships manually, or '2' to have them placed randomly: ";
+    cin >> man_or_rand;
+    while (man_or_rand != "1" && man_or_rand != "2") {
+        cout << "Invalid entry!" << endl << "Enter '1' to place your ships manually, or '2' to have them placed randomly ";
+        cin >> man_or_rand;
+    }
 
     srand(time(NULL));
 
@@ -406,15 +412,24 @@ int main() {
     map<string, int>* cpu_ship_coords = new map<string, int>();
 
     printBoard(player_board, player_moves);
-    //placeShips(player_board, player_moves, p_ship_coords);
-    autoGenShips(player_board, p_ship_coords);
+    // Player places ships manually
+    if (man_or_rand == "1") {
+        placeShips(player_board, player_moves, p_ship_coords);
+    }
+    else {
+        // Computer randomly places player's ships
+        cpuPlaceShips(player_board, p_ship_coords);
+    }
     cpuPlaceShips(cpu_board, cpu_ship_coords);
 
     bool game_over = false;
     string move_result;
     system("clear");
-    printBoard(cpu_board, player_board);
-    cout << "player board on top, cpu board on bottom" << endl;
+    printBoard(player_board, player_moves);
+
+    // Prints player and CPU ship locations, ONLY for testing and debugging
+    // printBoard(cpu_board, player_board);
+    // cout << "player board on top, cpu board on bottom" << endl;
 
     // game loop
     while(!game_over) {
@@ -429,26 +444,39 @@ int main() {
                 game_over = checkWinner(player_score);
             }
         }
-        cout << endl << endl;
+        cout << endl;
         if (game_over) {
-            cout << "Congratulations! You won Battleship! Thanks for playing!" << endl;
+            cout << endl << "Congratulations! You won Battleship! Thanks for playing!" << endl;
             break;
         }
 
+        //cout << "The computer is making its move...";
+        customSleep(4000);
+
+        //std::this_thread::sleep_for(std::chrono::seconds(4));
+
         // Computer move
-        cout << "The computer is making its move";
-        for (int i = 0; i < 3; i++) {
-            cout << ".";
-            // sleep some amount of time
-        }
-        cout << endl;
+        
+        // customSleep(1000);
+        // cout << ".";
+        // customSleep(1000);
+        // cout << ".";
+        // customSleep(1000);
+        // cout << ".";
+        // customSleep(1000);
+        // for (int i = 0; i < 3; i++) {
+        //     cout << ".";
+        //     clock_t goal2 = 1000 + clock();
+        //     while(goal2 > clock());
+        // }
+        system("clear");
         move_result = cpuMakeMove(player_moves, player_board);
         // Update player score
         if (move_result != "miss") {
             int ship = p_ship_coords->at(move_result);
             cpu_score[ship] += 1;
             if (cpu_score[ship] == victory[ship]) {
-                cout << " The CPU sunk your size " << victory[ship] << "ship!";
+                cout << " The CPU sank your size " << victory[ship] << " ship!";
                 game_over = checkWinner(cpu_score);
             }
         }
